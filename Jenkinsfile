@@ -29,7 +29,7 @@ pipeline {
     stage('Build') {
       steps {
         sh 'npm run --ng build'
-        sh 'npx nodeshift --strictSSL=false --dockerImage=bucharestgold/centos7-s2i-web-app --imageTag=10.x --build.env OUTPUT_DIR=dist/your-angular-app-name --expose'
+        sh 'npx nodeshift'
       }
     }
     stage('Test') {
