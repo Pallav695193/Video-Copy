@@ -6,6 +6,21 @@ pipeline {
 
   }
   stages {
+     stage ('preamble'){
+      steps{
+        script{
+          echo 'Preamble Stage - Environment info'
+ 
+          openshift.withCluster() {
+            openshift.withProject() {
+              echo "Using project: ${openshift.project()}"
+            }
+          }
+ 
+          sh 'npm version'
+        }
+      }
+     }
     stage('Node Check') {
       steps {
         sh 'node -v'

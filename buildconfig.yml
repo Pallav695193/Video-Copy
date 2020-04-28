@@ -1,0 +1,11 @@
+kind: "BuildConfig"
+apiVersion: "v1"
+metadata:
+  name: "video-copy"
+spec:
+  source:
+    git:
+      uri: "https://github.com/Pallav695193/Video-Copy.git"
+  strategy:
+    jenkinsPipelineStrategy:
+      jenkinsfilePath: Jenkinsfile
