@@ -32,27 +32,12 @@ pipeline {
     }
 
     stages {
-        stage('preamble') {
+        stage('Get Latest Code') {
             steps {
-                script {
+                    script {
                     openshift.withCluster() {
                         openshift.withProject() {
                             echo "Using project: ${openshift.project()}"
-                        }
-                    }
-                }
-            }
-        }
-        stage('Get Latest Code') {
-            steps {
-                git branch: "${GIT_BRANCH}", url: "${GIT_REPO}" // declared in environment
-            }
-        }
-        stage('cleanup') {
-            steps {
-                script {
-                    openshift.withCluster() {
-                        openshift.withProject() {
                             openshift.selector("all", [template : "${TEMPLATE_NAME}"]).delete()
                             if (openshift.selector("secrets", "${TEMPLATE_NAME}").exists()) {
                                 openshift.selector("secrets", "${TEMPLATE_NAME}").delete()
@@ -60,6 +45,7 @@ pipeline {
                         }
                     }
                 }
+                git branch: "${GIT_BRANCH}", url: "${GIT_REPO}" // declared in environment
             }
         }
         stage('Install Dependencies') {
