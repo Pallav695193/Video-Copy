@@ -27,9 +27,9 @@ pipeline {
         TEMPLATE_NAME = "video-tool-app"
         ARTIFACT_FOLDER = "target"
         PORT = 80;
-        MAIL_TO = 'ashish.mishra2@soprasteria.com,arvind.singh@soprasteria.com,pallav.narang@soprasteria.com,jenkinstestuser01@gmail.com,astha.bansal@soprasteria.com'
+        MAIL_TO = 'ashish.mishra2@soprasteria.com,arvind.singh@soprasteria.com,pallav.narang@soprasteria.com,jenkinstestuser01@gmail.com'
     }
-
+// ,astha.bansal@soprasteria.com
     stages {
         stage('Get Latest Code') {
             steps {
@@ -75,7 +75,7 @@ pipeline {
                     }
                     steps{
                         echo 'Valildation Stage - tslint'
-                        // sh 'npm run lint'
+                        sh 'npm run lint'
                     }
                 }
                 stage('test'){
