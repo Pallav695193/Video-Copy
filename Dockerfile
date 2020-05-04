@@ -6,9 +6,9 @@ COPY config/nginx/ /etc/nginx/conf.d/
 
 ## Remove default nginx website
 # RUN rm -rf /usr/share/nginx/html/*
-RUN echo $(ls /dist/video-tool)
+RUN echo $(ls /dist/VideoTool)
 ## copy over the artifacts in dist folder to default nginx public folder
-COPY dist/video-tool/ /usr/share/nginx/html
+COPY dist/VideoTool/ /usr/share/nginx/html
 
 
 # --- Nginx Setup ---
