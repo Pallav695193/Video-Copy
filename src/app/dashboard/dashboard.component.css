@@ -1,1 +1,13 @@
 a{ cursor: pointer;}
+
+.buttonred{
+    background-color: red;
+}
+
+.buttonyellow{
+    background-color: yellow;
+}
+
+.buttongreen{
+    background-color: green;
+}
