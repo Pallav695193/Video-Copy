@@ -15,7 +15,7 @@ export class VideoService {
   constructor(private http: HttpClient) { }
 
   getGMT(req) {
-    //return of('2020-01-10 10:44:03.989799');
+    // return of('2020-01-10 10:44:03.989799');
     return this.http.get(req, { responseType: 'text' });
   }
 

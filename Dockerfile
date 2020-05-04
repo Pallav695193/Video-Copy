@@ -1,13 +1,27 @@
-FROM node:10
+FROM nginx:mainline-alpine
 
-WORKDIR /usr/src/app
 
-ARG NODE_ENV
-ENV NODE_ENV $NODE_ENV
+## Copy our nginx config
+COPY config/nginx/ /etc/nginx/conf.d/
 
-COPY . /usr/src/app
-RUN npm install
-RUN npm run build
+## Remove default nginx website
+# RUN rm -rf /usr/share/nginx/html/*
+RUN echo $(ls /dist/video-tool)
+## copy over the artifacts in dist folder to default nginx public folder
+COPY dist/video-tool/ /usr/share/nginx/html
 
-EXPOSE 8080
-CMD [ "npm", "start" ]
+
+# --- Nginx Setup ---
+COPY config/nginx/default.conf /etc/nginx/conf.d/
+RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
+RUN chgrp -R root /var/cache/nginx
+RUN sed -i.bak 's/^user/#user/' /etc/nginx/nginx.conf
+RUN addgroup nginx root
+
+#-----printing-------
+RUN echo $(echo 'printing nginx default public html folder')
+RUN echo $(ls /usr/share/nginx/html)
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

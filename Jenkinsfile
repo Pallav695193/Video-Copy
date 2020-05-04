@@ -9,7 +9,7 @@ pipeline {
         }
     }
     environment {
-        SPA_NAME = "demo"
+        SPA_NAME = "video-tool"
         EXECUTE_VALIDATION_STAGE = "true"
         EXECUTE_VALID_PRETTIER_STAGE = "true"
         EXECUTE_VALID_TSLINT_STAGE = "true"
@@ -17,15 +17,17 @@ pipeline {
         EXECUTE_TAG_STAGE = "true"
         EXECUTE_BUILD_STAGE = "true"
 
-        APPLICATION_NAME = 'ng-tomcat-app'
-        GIT_REPO = "https://github.com/ivid-123/demo.git"
+        APPLICATION_NAME = 'video-tool-app'
+        GIT_REPO = "https://github.com/Pallav695193/Video-Copy.git"
         GIT_BRANCH = "master"
         STAGE_TAG = "promoteToQA"
+        DEV_TAG = "1.0"
         DEV_PROJECT = "dev"
         STAGE_PROJECT = "stage"
-        TEMPLATE_NAME = "ng-tomcat-app"
+        TEMPLATE_NAME = "video-tool-app"
         ARTIFACT_FOLDER = "target"
-        PORT = 8081;
+        PORT = 80;
+        MAIL_TO = 'ashish.mishra2@soprasteria.com,arvind.singh@soprasteria.com,pallav.narang@soprasteria.com,jenkinstestuser01@gmail.com'
 
     }
 
@@ -51,9 +53,9 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject() {
-                            openshift.selector("all", [template : templateName]).delete()
-                            if (openshift.selector("secrets", templateName).exists()) {
-                                openshift.selector("secrets", templateName).delete()
+                            openshift.selector("all", [template : "${TEMPLATE_NAME}"]).delete()
+                            if (openshift.selector("secrets", "${TEMPLATE_NAME}").exists()) {
+                                openshift.selector("secrets", "${TEMPLATE_NAME}").delete()
                             }
                         }
                     }
@@ -62,16 +64,11 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                // required to run unit test using phontonjs 
-                //sh 'npm install chrome -g'
-                //sh 'which chrome'
-                //sh 'npm install phantomjs-prebuilt -g --ddd'
-                //sh 'npm install phantomjs-prebuilt@2.1.14 --ignore-scripts'
-                // sh 'which chrome'
                 sh 'npm install'
+                echo 'installing dependencies'
             }
         }
-        stage('validation'){
+        stage('Validation'){
             when {
                 environment name: "EXECUTE_VALIDATION_STAGE", value: "true"
             }
@@ -84,7 +81,7 @@ pipeline {
                     }
                     steps{
                         echo 'Validation Stage - prettier'
-                        /// sh 'npm run prettier:check'
+                        //sh 'npm run prettier:check'
                     }
                 }
                 stage('Tslint'){
@@ -93,7 +90,7 @@ pipeline {
                     }
                     steps{
                         echo 'Valildation Stage - tslint'
-                        sh 'npm run lint'
+                        // sh 'npm run lint'
                     }
                 }
                 stage('test'){
@@ -103,13 +100,19 @@ pipeline {
                     steps{
                         script{
                             echo 'Test Stage - Launching unit tests'
-                            sh 'npm run test:phantom'
+                            sh 'npm run test'
                         }
                     }
                 }
             }
         }
-
+        stage('Build App') {
+            steps {
+                script {
+                    sh 'npm run build --prod'
+                }
+            }
+        }
         stage('Store Artifact'){
             steps{
                 script{
@@ -118,6 +121,8 @@ pipeline {
                         fullFileName = "${safeBuildName}.tar.gz",
                         applicationZip = "${artifactFolder}/${fullFileName}"
                     applicationDir = ["src",
+                        "dist",
+                        "config",
                         "Dockerfile",
                     ].join(" ");
                     def needTargetPath = !fileExists("${artifactFolder}")
@@ -145,32 +150,31 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject(DEV_PROJECT) {
-                            echo 'starting new build'
-                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
-                            echo 'finished new build'
+                            echo 'creating a new build configuration'
+                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/nginx:mainline-alpine", "--binary=true")
+                            echo 'new build configuration created'
                         }
+
                     }
                 }
             }
         }
-
         stage('Build Image') {
             steps {
                 script {
                     openshift.withCluster() {
-                        openshift.withProject(env.DEV_PROJECT) {
-                            openshift.selector("bc", "$TEMPLATE_NAME").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true")
+                        openshift.withProject(DEV_PROJECT) {
+                            openshift.selector("bc", "${TEMPLATE_NAME}").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true")
                         }
                     }
                 }
             }
         }
-
         stage('Deploy to DEV') {
             when {
                 expression {
                     openshift.withCluster() {
-                        openshift.withProject(env.DEV_PROJECT) {
+                        openshift.withProject(DEV_PROJECT) {
                             return !openshift.selector('dc', "${TEMPLATE_NAME}").exists()
                         }
                     }
@@ -179,12 +183,12 @@ pipeline {
             steps {
                 script {
                     openshift.withCluster() {
-                        openshift.withProject(env.DEV_PROJECT) {
+                        openshift.withProject(DEV_PROJECT) {
                             def app = openshift.newApp("${TEMPLATE_NAME}:latest")
                             app.narrow("svc").expose("--port=${PORT}");
                             def dc = openshift.selector("dc", "${TEMPLATE_NAME}")
                             while (dc.object().spec.replicas != dc.object().status.availableReplicas) {
-                                sleep 10
+                                // sleep 1
                             }
                         }
                     }
@@ -224,9 +228,44 @@ pipeline {
         stage('Scale in STAGE') {
             steps {
                 script {
-                    openshiftScale(namespace: "${STAGE_PROJECT}", deploymentConfig: "${TEMPLATE_NAME}", replicaCount: '3')
+                    openshiftScale(namespace: "${STAGE_PROJECT}", deploymentConfig: "${TEMPLATE_NAME}", replicaCount: '2')
                 }
             }
+        }
+
+    }
+    post {
+        // always {
+        //     echo 'I will always say Hello again!'
+
+        //     emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+        //         recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+        //             subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+
+        // }
+        // failure {
+        //     mail to: "${MAIL_TO}", subject: 'The Pipeline failed:'
+        // }
+        // success {
+        //     mail to: "${MAIL_TO}", subject: 'The Pipeline success:'
+        // }
+        success {
+                        //cest = TimeZone.getTimeZone("CEST")
+                        emailext body: '''${SCRIPT, template="groovy-html.template"}''',
+                        //emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+                        mimeType: 'text/html',
+                        subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}",
+                        to: "${MAIL_TO}",
+                        replyTo: "${MAIL_TO}"
+        }
+        failure {
+
+                        emailext body: '''${SCRIPT, template="groovy-html.template"}''',
+                        mimeType: 'text/html',
+                        subject: "[Jenkins] ${currentBuild.fullDisplayName}",
+                        to: "${MAIL_TO}",
+                        replyTo: "${MAIL_TO}",
+                        recipientProviders: [[$class: 'CulpritsRecipientProvider']]
         }
 
     }

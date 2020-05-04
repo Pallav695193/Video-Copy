@@ -57,7 +57,7 @@ export class SingleCardOrientationComponent
     this.videoService.getGMT(req).subscribe(
       res => {
         const items = res.split('\n');
-        console.log("items:", items);
+        console.log('items:', items);
         // method calling
         this.ShareStarendTime(startTime, new Date(items[items.length - 2]));
       },

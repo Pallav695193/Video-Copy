@@ -10,4 +10,4 @@ export class MenuItems {
         this.disabled = disabledl;
         this.defaultColor = defaultColorl;
     }
-};
+}
