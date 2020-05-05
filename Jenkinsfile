@@ -86,7 +86,7 @@ pipeline {
                     steps{
                         script{
                             echo 'Test Stage - Launching unit tests'
-                            sh 'npm run test'
+                            sh 'npm run test --code-coverage'
                         }
                     }
                 }
@@ -98,6 +98,9 @@ pipeline {
                     sh 'npm run build --prod'
                 }
             }
+        }
+        stage('Code Coverage') {
+            sh 'npm run sonar'
         }
         stage('Store Artifact'){
             steps{

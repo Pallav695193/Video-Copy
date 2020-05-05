@@ -11,7 +11,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "prettier:check": "prettier --list-different \"src/**/*.ts\"",
-    "stylelint": "stylelint \"src/**/*.css\""
+    "stylelint": "stylelint \"src/**/*.css\"",
+    "sonar": "sonar-scanner"
   },
   "lint-staged": {
     "*.scss": [
@@ -67,13 +68,16 @@
     "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
     "karma-phantomjs-launcher": "^1.0.4",
+    "karma-sonarqube-unit-reporter": "0.0.21",
     "prettier": "^2.0.5",
     "prettify-xml": "^1.2.0",
     "protractor": "~5.4.0",
+    "sonar-scanner": "^3.1.0",
     "surge": "^0.21.3",
     "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
     "tslint-config-prettier": "^1.18.0",
+    "tslint-sonarts": "^1.9.0",
     "typescript": "~3.2.2"
   }
 }
