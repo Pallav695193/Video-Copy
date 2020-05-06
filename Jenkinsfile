@@ -60,15 +60,15 @@ pipeline {
 
             failFast true
             parallel {
-                stage('Prettier'){
-                    when {
-                        environment name: "EXECUTE_VALID_PRETTIER_STAGE", value: "true"
-                    }
-                    steps{
-                        echo 'Validation Stage - prettier'
-                        //sh 'npm run prettier:check'
-                    }
-                }
+                // stage('Prettier'){
+                //     when {
+                //         environment name: "EXECUTE_VALID_PRETTIER_STAGE", value: "true"
+                //     }
+                //     steps{
+                //         echo 'Validation Stage - prettier'
+                //         //sh 'npm run prettier:check'
+                //     }
+                // }
                 stage('Linting'){
                     when {
                         environment name: "EXECUTE_VALID_TSLINT_STAGE", value: "true"
@@ -103,6 +103,19 @@ pipeline {
                 script {
                     sh 'npm run sonar'
                     }
+            }
+        }
+        stage('Quality Gates') {
+            environment {
+                scannerHome = tool 'sonarqube-scanner'
+            }
+            steps {
+                withSonarQubeEnv('sonarqube') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
         stage('Store Artifact'){
