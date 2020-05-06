@@ -69,7 +69,7 @@ pipeline {
                         //sh 'npm run prettier:check'
                     }
                 }
-                stage('Tslint'){
+                stage('Linting'){
                     when {
                         environment name: "EXECUTE_VALID_TSLINT_STAGE", value: "true"
                     }
@@ -78,7 +78,7 @@ pipeline {
                         // sh 'npm run lint'
                     }
                 }
-                stage('test'){
+                stage('Test'){
                     when {
                         environment name: "EXECUTE_TEST_STAGE", value: "true"
                     }
