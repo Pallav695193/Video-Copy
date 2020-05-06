@@ -85,7 +85,7 @@ pipeline {
                     steps{
                         script{
                             echo 'Test Stage - Launching unit tests'
-                            sh 'npm run test'
+                             sh 'npm run test --code-coverage'
                         }
                     }
                 }
@@ -98,7 +98,7 @@ pipeline {
                 }
             }
         }
-         stage('Sonar Report') {
+         stage('Sonar Report') {npm install tslint-sonarts --save-dev
             steps {
                 script {
                     sh 'npm run sonar'
