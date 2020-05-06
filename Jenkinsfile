@@ -98,7 +98,7 @@ pipeline {
                 }
             }
         }
-         stage('Sonar Report') {npm install tslint-sonarts --save-dev
+         stage('Sonar Report') {
             steps {
                 script {
                     sh 'npm run sonar'
