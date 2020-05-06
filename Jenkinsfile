@@ -22,8 +22,8 @@ pipeline {
         GIT_BRANCH = "master"
         STAGE_TAG = "promoteToQA"
         DEV_TAG = "1.0"
-        DEV_PROJECT = "dev-arv"
-        STAGE_PROJECT = "stage-arv"
+        DEV_PROJECT = "dev"
+        STAGE_PROJECT = "stage"
         TEMPLATE_NAME = "video-tool-app"
         ARTIFACT_FOLDER = "target"
         PORT = 80;
@@ -75,7 +75,7 @@ pipeline {
                     }
                     steps{
                         echo 'Valildation Stage - tslint'
-                        // sh 'npm run lint'
+                        sh 'npm run lint'
                     }
                 }
                 stage('Test'){
