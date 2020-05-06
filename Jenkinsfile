@@ -78,6 +78,26 @@ pipeline {
                         sh 'npm run lint'
                     }
                 }
+                stage('Sonar Report') {
+                    steps {
+                        script {
+                        sh 'npm run sonar'
+                    }
+            }
+        }
+        // stage('Quality Gates') {
+        //     environment {
+        //         scannerHome = tool 'sonarqube-scanner'
+        //     }
+        //     steps {
+        //         withSonarQubeEnv('sonarqube') {
+        //             sh "${scannerHome}/bin/sonar-scanner"
+        //         }
+        //         timeout(time: 10, unit: 'MINUTES') {
+        //             waitForQualityGate abortPipeline: true
+        //         }
+        //     }
+        // }
                 stage('Test'){
                     when {
                         environment name: "EXECUTE_TEST_STAGE", value: "true"
