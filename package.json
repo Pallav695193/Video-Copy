@@ -67,7 +67,7 @@
     "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
     "karma-phantomjs-launcher": "^1.0.4",
-    "prettier": "^2.0.5",
+    "prettier": "2.0.5",
     "prettify-xml": "^1.2.0",
     "protractor": "~5.4.0",
     "surge": "^0.21.3",
