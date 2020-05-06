@@ -22,8 +22,8 @@ pipeline {
         GIT_BRANCH = "master"
         STAGE_TAG = "promoteToQA"
         DEV_TAG = "1.0"
-        DEV_PROJECT = "devpnar"
-        STAGE_PROJECT = "stagepnar"
+        DEV_PROJECT = "dev-arv"
+        STAGE_PROJECT = "stage-arv"
         TEMPLATE_NAME = "video-tool-app"
         ARTIFACT_FOLDER = "target"
         PORT = 80;
