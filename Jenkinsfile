@@ -29,7 +29,7 @@ pipeline {
         PORT = 80;
         MAIL_TO = 'ashish.mishra2@soprasteria.com,arvind.singh@soprasteria.com,pallav.narang@soprasteria.com,jenkinstestuser01@gmail.com'
     }
-
+// ,astha.bansal@soprasteria.com, vidya.sinha@soprasteria.com
     stages {
         stage('Get Latest Code') {
             steps {
@@ -69,7 +69,7 @@ pipeline {
                 //         //sh 'npm run prettier:check'
                 //     }
                 // }
-                stage('Linting'){
+                stage('Lint'){
                     when {
                         environment name: "EXECUTE_VALID_TSLINT_STAGE", value: "true"
                     }
@@ -78,7 +78,7 @@ pipeline {
                         sh 'npm run lint'
                     }
                 }
-                stage('Test'){
+                stage('Unit Test'){
                     when {
                         environment name: "EXECUTE_TEST_STAGE", value: "true"
                     }
@@ -91,14 +91,14 @@ pipeline {
                 }
             }
         }
-        stage('Build App') {
+        stage('Source Build') {
             steps {
                 script {
                     sh 'npm run build --prod'
                 }
             }
         }
-         stage('Sonar Report') {
+         stage('Quality Analysis') {
             steps {
                 script {
                     sh 'npm run sonar'
@@ -140,7 +140,7 @@ pipeline {
             }
         }
 
-        stage('Create Image Builder') {
+        stage('Configure Build') {
             when {
                 expression {
                     openshift.withCluster() {
