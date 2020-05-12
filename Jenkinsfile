@@ -100,7 +100,6 @@ pipeline {
          stage('Quality Analysis') {
             steps {
                 script {
-                    //  echo 'Test Stage - Launching unit tests'
                     sh 'npm run sonar'
                     }
             }
