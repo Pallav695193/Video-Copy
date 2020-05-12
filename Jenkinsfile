@@ -85,7 +85,7 @@ pipeline {
                     steps{
                         script{
                             echo 'Test Stage - Launching unit tests'
-                             sh 'npm run test --code-coverage'
+                            //  sh 'npm run test --code-coverage'
                         }
                     }
                 }
