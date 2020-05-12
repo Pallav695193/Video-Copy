@@ -97,13 +97,14 @@ pipeline {
                 }
             }
         }
-        //  stage('Quality Analysis') {
-        //     steps {
-        //         script {
-        //             sh 'npm run sonar'
-        //             }
-        //     }
-        // }
+         stage('Quality Analysis') {
+            steps {
+                script {
+                     echo 'Test Stage - Launching unit tests'
+                    // sh 'npm run sonar'
+                    }
+            }
+        }
         // stage('Quality Gates') {
         //     environment {
         //         scannerHome = tool 'sonarqube-scanner'
