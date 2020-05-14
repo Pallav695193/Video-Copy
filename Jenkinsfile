@@ -27,9 +27,10 @@ pipeline {
         TEMPLATE_NAME = "video-tool-app"
         ARTIFACT_FOLDER = "target"
         PORT = 80;
-        MAIL_TO = 'ashish.mishra2@soprasteria.com,arvind.singh@soprasteria.com,pallav.narang@soprasteria.com,jenkinstestuser01@gmail.com'
+        MAIL_TO = 'ashish.mishra2@soprasteria.com,arvind.singh@soprasteria.com,pallav.narang@soprasteria.com,jenkinstestuser01@gmail.com,astha.bansal@soprasteria.com,nishant-kumar.sood@soprasteria.com'
     }
-// ,astha.bansal@soprasteria.com, nishant-kumar.sood@soprasteria.com
+
+    stages {
         stage('Get Latest Code') {
             steps {
                     script {
@@ -68,7 +69,7 @@ pipeline {
                 //         //sh 'npm run prettier:check'
                 //     }
                 // }
-                stage('Lint'){
+                stage('Linting'){
                     when {
                         environment name: "EXECUTE_VALID_TSLINT_STAGE", value: "true"
                     }
@@ -84,26 +85,26 @@ pipeline {
                     steps{
                         script{
                             echo 'Test Stage - Launching unit tests'
-                            //  sh 'npm run test --code-coverage'
+                             sh 'npm run test --code-coverage'
                         }
                     }
                 }
             }
         }
-        stage('Source Build') {
+        stage('Build App') {
             steps {
                 script {
                     sh 'npm run build --prod'
                 }
             }
         }
-         stage('Quality Analysis') {
-            steps {
-                script {
-                    sh 'npm run sonar'
-                    }
-            }
-        }
+        // stage('Sonar Report') {
+        //    steps {
+        //        script {
+        //            sh 'npm run sonar'
+        //            }
+      //      }
+       // }
         // stage('Quality Gates') {
         //     environment {
         //         scannerHome = tool 'sonarqube-scanner'
@@ -139,7 +140,7 @@ pipeline {
             }
         }
 
-        stage('Configure Build') {
+        stage('Create Image Builder') {
             when {
                 expression {
                     openshift.withCluster() {
@@ -160,7 +161,7 @@ pipeline {
                         }
 
                     }
-                }
+               }
             }
         }
         stage('Build Image') {
@@ -234,7 +235,7 @@ pipeline {
                 script {
                     openshiftScale(namespace: "${STAGE_PROJECT}", deploymentConfig: "${TEMPLATE_NAME}", replicaCount: '1')
                 }
-            }
+           }
         }
 
     }
@@ -277,3 +278,6 @@ pipeline {
     }
 
 }
+
+
+
